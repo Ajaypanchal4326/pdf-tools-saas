@@ -1,5 +1,5 @@
 import React from "react";
-import { FileText, Mail, Twitter, Linkedin, Github } from "lucide-react";
+import { FileText, } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer: React.FC = () => {
@@ -29,11 +29,7 @@ const Footer: React.FC = () => {
     { name: "About", href: "/About" },
   ];
 
-  const socialLinks = [
-    { name: "Twitter", icon: <Twitter className="w-5 h-5" />, href: "#" },
-    { name: "LinkedIn", icon: <Linkedin className="w-5 h-5" />, href: "#" },
-    { name: "GitHub", icon: <Github className="w-5 h-5" />, href: "#" },
-  ];
+ 
 
   const seoKeywords = [
     "online pdf editor",
@@ -70,13 +66,7 @@ const Footer: React.FC = () => {
               Everything runs in your browser — nothing stored.
             </p>
 
-            <div className="flex space-x-3 mt-2">
-              {socialLinks.map((s, i) => (
-                <a key={i} href={s.href} className="text-gray-500 hover:text-blue-600">
-                  {s.icon}
-                </a>
-              ))}
-            </div>
+           
           </div>
 
           {/* PDF Tools */}
@@ -139,18 +129,19 @@ const Footer: React.FC = () => {
             <p className="text-gray-600 text-sm mb-3">Weekly updates & new tools.</p>
 
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg"
-                />
-              </div>
-              <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                Subscribe
-              </button>
-            </div>
+  <div className="relative flex-1">
+    <input
+      type="email"
+      placeholder="Your email"
+      className="w-full px-4 pr-4 py-2 text-sm border border-gray-300 rounded-lg"
+    />
+  </div>
+
+  <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+    Subscribe
+  </button>
+</div>
+
           </div>
 
           {/* SEO Keywords */}
