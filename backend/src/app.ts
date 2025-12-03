@@ -10,13 +10,15 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://pdf-tools-saas-ten.vercel.app",  // Your frontend on Vercel
-      "http://localhost:5173",                  // Local dev
+      "https://pdf-tools-saas-amyc.vercel.app",   // NEW frontend
+      "https://pdf-tools-saas-ten.vercel.app",    // OLD frontend (optional)
+      "http://localhost:5173"
     ],
     methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: ["Content-Type"]
   })
 );
+
 // ------------------------------------------
 
 app.use(express.json());
