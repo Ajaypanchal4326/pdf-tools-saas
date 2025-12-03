@@ -11,10 +11,13 @@ const convertImageToPdf = async (files: File[]) => {
     formData.append('files', file);
   });
 
-  const response = await fetch('http://localhost:5000/api/convert/image-to-pdf', {
-    method: 'POST',
+  const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/convert/image-to-pdf`,
+  {
+    method: "POST",
     body: formData,
-  });
+  }
+);
 
   if (!response.ok) {
     const error = await response.json();

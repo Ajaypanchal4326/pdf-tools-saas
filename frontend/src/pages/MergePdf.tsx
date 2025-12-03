@@ -69,10 +69,14 @@ const MergePdf: React.FC = () => {
       const formData = new FormData();
       selectedFiles.forEach((file) => formData.append("files", file));
 
-      const response = await fetch("http://localhost:5000/api/convert/merge-pdf", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/api/convert/merge-pdf`,
+  {
+    method: "POST",
+    body: formData,
+  }
+);
+
 
       if (!response.ok) throw new Error("Merge failed");
 

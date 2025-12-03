@@ -4,11 +4,21 @@ import cors from "cors";
 import imageToPdfRoute from "./routes/imageToPdfRoute";
 import mergePdfRoute from "./routes/mergePdfRoute";
 
-
 const app = express();
 
-// Middleware
-app.use(cors());
+// ---------------- CORS FIX ----------------
+app.use(
+  cors({
+    origin: [
+      "https://pdf-tools-saas-ten.vercel.app",  // Your frontend on Vercel
+      "http://localhost:5173",                  // Local dev
+    ],
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+// ------------------------------------------
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

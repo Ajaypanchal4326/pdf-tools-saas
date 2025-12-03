@@ -15,35 +15,48 @@ export const convertImageToPdf = async (req: Request, res: Response) => {
 
     for (const file of files) {
       try {
-        const imgBuffer = await sharp(file.path).png().toBuffer();
+        // Read file buffer
+        const inputBuffer = fs.readFileSync(file.path);
+
+        // Convert image to PNG buffer (universal)
+        const imgBuffer = await sharp(inputBuffer).png().toBuffer();
+
+        // Embed into PDF
         const image = await pdfDoc.embedPng(imgBuffer);
-
         const { width, height } = image;
-        const page = pdfDoc.addPage([width, height]);
 
+        const page = pdfDoc.addPage([width, height]);
         page.drawImage(image, { x: 0, y: 0, width, height });
+
       } catch (err) {
-        console.error(`Error with file ${file.originalname}`, err);
+        console.error(`❌ Error processing file: ${file.originalname}`, err);
       }
     }
 
     const pdfBytes = await pdfDoc.save();
 
+    // Headers
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "attachment; filename=converted.pdf");
+    res.setHeader("Content-Length", pdfBytes.length.toString());
 
     res.send(Buffer.from(pdfBytes));
 
-    // Clean uploads
-    files.forEach((f) => fs.existsSync(f.path) && fs.unlinkSync(f.path));
+    // Cleanup temp uploads
+    files.forEach((file) => {
+      if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+    });
 
   } catch (err: any) {
-    console.error("Image → PDF Error:", err);
+    console.error("❌ PDF Conversion Error:", err);
 
-    // Cleanup
     const files = req.files as Express.Multer.File[];
     files?.forEach((f) => fs.existsSync(f.path) && fs.unlinkSync(f.path));
 
-    res.status(500).json({ success: false, message: "Conversion failed", error: err.message });
+    return res.status(500).json({
+      success: false,
+      message: "Conversion failed",
+      error: err.message,
+    });
   }
 };

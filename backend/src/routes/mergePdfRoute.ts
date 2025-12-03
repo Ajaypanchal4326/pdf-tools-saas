@@ -1,15 +1,22 @@
 import express from "express";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 import { mergePdf } from "../controllers/mergePdfController";
 
 const router = express.Router();
 
-// Multer storage for PDF files
+// Make sure upload directory exists (works on Render)
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (_, __, cb) => cb(null, "uploads/"),
+  destination: (_, __, cb) => cb(null, uploadDir),
   filename: (_, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, unique + ".pdf");
+    cb(null, unique + path.extname(file.originalname));
   }
 });
 
