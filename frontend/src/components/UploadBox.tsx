@@ -1,4 +1,4 @@
-import React, { useState, useRef, type DragEvent, type ChangeEvent } from "react";
+import React, { useState, useRef, type DragEvent,} from "react";
 import { Upload, FileText, Image, CheckCircle } from "lucide-react";
 
 type AcceptedTypes = "images" | "pdf" | "all";

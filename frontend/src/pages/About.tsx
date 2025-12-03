@@ -1,6 +1,6 @@
 import React from 'react';
-import { FileText, Shield, Zap, Heart, Mail, Github, Twitter } from 'lucide-react';
-import { Link } from "react-router-dom";
+import { FileText, Shield, Zap, Heart} from 'lucide-react';
+
 
 const AboutPage: React.FC = () => {
   const features = [

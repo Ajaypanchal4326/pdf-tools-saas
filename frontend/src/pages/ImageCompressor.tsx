@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Upload, Download, CheckCircle, X, Image } from "lucide-react";
+import { ArrowLeft, Upload, CheckCircle, X, Image } from "lucide-react";
 
 const ImageCompressor: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -490,12 +490,12 @@ const ImageCompressor: React.FC = () => {
                 Step 4: Download Compressed Image
               </h2>
               <button
-                onClick={downloadImage}
-                className="w-full py-4 px-6 rounded-lg font-semibold text-white bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
-              >
-                <Download className="w-5 h-5" />
-                <span>Download Compressed Image</span>
-              </button>
+  onClick={downloadImage}
+  className="w-full py-4 px-6 rounded-lg font-semibold text-white bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center"
+>
+  <span>Download Compressed Image</span>
+</button>
+
               <p className="text-xs text-gray-500 text-center mt-3">
                 Your compressed image is ready to download
               </p>

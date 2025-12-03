@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Download, FileText, Scissors, CheckCircle, X, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Download, FileText, CheckCircle, X, AlertCircle } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
 
 interface NotificationProps {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Download, Image, Zap, FileImage, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Download, Image, Zap, FileImage} from 'lucide-react';
 
 const JpgToWebp: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);

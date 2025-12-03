@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Download, Image, Upload, X, FileText, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Image, Upload, X, FileText, AlertCircle } from 'lucide-react';
 
 // ============================================
 // API HELPER FUNCTION
