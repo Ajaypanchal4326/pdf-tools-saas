@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import {
   FileText,
   Image,
@@ -183,9 +184,9 @@ const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tools.map((tool) => (
-              <a
+              <Link
                 key={tool.id}
-                href={tool.path}
+                to={tool.path}
                 className={`
                   group block p-6 rounded-xl border-2 border-gray-200
                   ${tool.bgColor} transition-all duration-200
@@ -219,7 +220,7 @@ const Home: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
