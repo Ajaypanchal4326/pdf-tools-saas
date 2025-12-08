@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SEOAuto from "../components/SEOAuto";
 import { ArrowLeft, Download, Image, Sparkles, FileImage, CheckCircle, X } from 'lucide-react';
 
 interface NotificationProps {
@@ -10,6 +11,8 @@ interface NotificationProps {
 const Notification: React.FC<NotificationProps> = ({ message, type, onClose }) => {
   return (
     <div className="fixed top-4 right-4 z-50 animate-slide-in">
+      <SEOAuto />
+
       <div className={`
         rounded-lg shadow-lg p-4 pr-12 max-w-md
         ${type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}

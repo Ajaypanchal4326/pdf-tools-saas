@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import SEOAuto from "../components/SEOAuto";
 import {
   FileText,
   Image,
@@ -25,6 +26,8 @@ interface Tool {
 }
 
 const Home: React.FC = () => {
+
+ 
   const tools: Tool[] = [
     // PDF Tools
     {
@@ -162,9 +165,13 @@ const Home: React.FC = () => {
     },
   ];
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero */}
+<SEOAuto />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">

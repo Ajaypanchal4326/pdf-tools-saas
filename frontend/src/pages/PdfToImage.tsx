@@ -3,6 +3,7 @@ import { ArrowLeft, Download, FileText, Upload, X, Image, AlertCircle, Check, Lo
 import * as pdfjsLib from 'pdfjs-dist';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import SEOAuto from "../components/SEOAuto";
 
 // FIXED: Proper worker setup for Vite
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -188,6 +189,8 @@ const PdfToImage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
+      <SEOAuto />
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

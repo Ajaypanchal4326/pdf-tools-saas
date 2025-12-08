@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, Image, X, CheckCircle } from 'lucide-react';
+import SEOAuto from "../components/SEOAuto";
+
 
 interface ConvertedFile {
   name: string;
@@ -138,6 +140,7 @@ const JpgToPng: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOAuto />
       {/* Notification Toast */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">

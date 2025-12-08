@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, Image, Zap, FileImage} from 'lucide-react';
+import SEOAuto from "../components/SEOAuto";
+
 
 const JpgToWebp: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -75,6 +77,7 @@ const JpgToWebp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
+      <SEOAuto />
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

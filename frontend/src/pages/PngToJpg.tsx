@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, Image, AlertCircle } from 'lucide-react';
+import SEOAuto from "../components/SEOAuto";
+
 
 interface UploadBoxProps {
   onFileSelect: (files: File[]) => void;
@@ -163,6 +165,8 @@ const PngToJpg: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOAuto />
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

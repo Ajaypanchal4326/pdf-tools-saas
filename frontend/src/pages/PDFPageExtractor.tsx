@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, FileText, CheckCircle, X, AlertCircle } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
+import SEOAuto from "../components/SEOAuto";
+
 
 interface NotificationProps {
   message: string;
@@ -23,6 +25,8 @@ const Notification: React.FC<NotificationProps> = ({ message, type, onClose }) =
 
   return (
     <div className="fixed top-4 right-4 z-50 animate-slide-in">
+      <SEOAuto />
+
       <div className={`rounded-lg shadow-lg p-4 pr-12 max-w-md border ${colors[type]}`}>
         <div className="flex items-start">
           <CheckCircle className={`w-5 h-5 mr-3 flex-shrink-0 mt-0.5 ${iconColors[type]}`} />

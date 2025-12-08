@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowLeft, Upload, CheckCircle, X, Image } from "lucide-react";
+import SEOAuto from "../components/SEOAuto";
 
 const ImageCompressor: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -167,6 +168,8 @@ const ImageCompressor: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOAuto />
+       
       {/* Toast Notification */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">

@@ -4,6 +4,8 @@ import { ArrowLeft, Upload, Download, CheckCircle, X} from "lucide-react";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import * as pdfjsLib from "pdfjs-dist";
 import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import SEOAuto from "../components/SEOAuto";
+
 
 GlobalWorkerOptions.workerSrc = workerSrc;
 
@@ -194,6 +196,7 @@ const PdfCompressor: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOAuto />
       {/* Toast Notification */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">

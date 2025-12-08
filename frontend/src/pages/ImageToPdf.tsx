@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Image, Upload, X, FileText, AlertCircle } from 'lucide-react';
+import SEOAuto from "../components/SEOAuto";
+
 
 // ============================================
 // API HELPER FUNCTION
@@ -31,6 +33,7 @@ const convertImageToPdf = async (files: File[]) => {
 // IMAGE TO PDF COMPONENT
 // ============================================
 const ImageToPdf: React.FC = () => {
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -125,6 +128,7 @@ const ImageToPdf: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <SEOAuto />
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

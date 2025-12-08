@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Download, Image, Sparkles, CheckCircle, X } from 'lucide-react';
+import SEOAuto from "../components/SEOAuto";
 
 interface UploadBoxProps {
   onFileSelect: (files: File[]) => void;
@@ -40,6 +41,8 @@ const UploadBox: React.FC<UploadBoxProps> = ({
         ${isDragging ? 'border-cyan-500 bg-cyan-50' : 'border-gray-300 bg-white hover:border-cyan-400'}
       `}
     >
+      <SEOAuto />
+
       <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <Image className="w-8 h-8 text-cyan-600" />
       </div>
