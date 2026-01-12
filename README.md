@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Fast • Secure • Browser-Based PDF & Image Tools</b><br/>
-  Convert, compress, merge & extract files without uploading anything.
+  Convert, compress, merge & extract files with maximum privacy.
 </p>
 
 <p align="center">
@@ -17,12 +17,15 @@
 
 ## ✨ What is PDFTools?
 
-**PDFTools** is a modern SaaS web application that provides **free PDF and image utilities**  
-with **100% client-side processing** — meaning your files never leave your device.
+**PDFTools** is a modern **SaaS web application** that provides powerful **PDF and image utilities**
+with a strong focus on **privacy, speed, and simplicity**.
 
-No login.  
-No uploads.  
-No tracking.
+Most tools work **100% in the browser**, and heavy operations are handled securely by the backend.
+
+✔ No login  
+✔ No tracking  
+✔ No unnecessary uploads  
+✔ Clean UI, fast processing  
 
 ---
 
@@ -33,7 +36,7 @@ No tracking.
 - ✅ PDF to Image  
 - ✅ Merge PDF  
 - ✅ PDF Compressor (Low / Medium / High)  
-- ✅ PDF Page Extractor (Select pages & ranges)
+- ✅ PDF Page Extractor (custom page ranges)
 
 ### 🖼️ Image Tools
 - ✅ Image Compressor (JPG / PNG / WEBP)  
@@ -46,27 +49,60 @@ No tracking.
 
 ---
 
-## 🔐 Privacy First
+## 🔐 Privacy First Architecture
 
-✔ 100% browser-based processing  
-✔ No server upload  
-✔ No file storage  
-✔ No tracking or analytics  
-✔ Works offline after load  
+- ✔ Browser-based processing for most tools
+- ✔ Backend used only when required (Image → PDF, Merge PDF)
+- ✔ No file storage
+- ✔ Temporary files auto-deleted
+- ✔ No analytics or tracking
 
-Your documents stay **on your device only**.
+Your files remain **safe, private, and under your control**.
 
 ---
 
 ## ⚡ Tech Stack
 
-### Frontend
+### 🌐 Frontend
 - **React + TypeScript**
 - **Vite**
 - **Tailwind CSS**
 - **pdf-lib**
 - **Canvas API**
-- **Modern browser compression**
+- **Client-side compression**
 
-### Hosting
-- **Vercel**
+### ⚙️ Backend
+- **Node.js**
+- **Express 5**
+- **TypeScript**
+- **Multer** (file uploads)
+- **pdf-lib**
+- **Sharp**
+- **Archiver**
+- **Rate limiting & CORS**
+
+---
+
+## 🗂 Project Structure
+
+```text
+pdf-tools-saas/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   ├── utils/
+│   │   └── main.tsx
+│   └── index.html
+│
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   ├── app.ts
+│   │   └── server.ts
+│   └── package.json
+│
+└── README.md
