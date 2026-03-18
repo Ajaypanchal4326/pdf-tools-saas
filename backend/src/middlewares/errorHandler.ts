@@ -49,10 +49,27 @@ export const errorHandler = async (
     });
   }
 
-  const fallback = err as { message?: string };
+  const bodyParserError = err as { type?: string; status?: number; message?: string };
+
+  if (bodyParserError.type === "entity.too.large" || bodyParserError.status === 413) {
+    return res.status(413).json({
+      success: false,
+      code: "REQUEST_BODY_TOO_LARGE",
+      message: "Request body exceeds the allowed limit",
+    });
+  }
+
+  if (bodyParserError.type === "entity.parse.failed") {
+    return res.status(400).json({
+      success: false,
+      code: "INVALID_JSON_PAYLOAD",
+      message: "Malformed JSON payload",
+    });
+  }
+
   return res.status(500).json({
     success: false,
     code: "INTERNAL_SERVER_ERROR",
-    message: fallback?.message ?? "Unexpected server error",
+    message: bodyParserError.message ?? "Unexpected server error",
   });
 };

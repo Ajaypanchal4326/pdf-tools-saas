@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import cors, { CorsOptions } from "cors";
+import helmet from "helmet";
 
 import imageToPdfRoute from "./routes/imageToPdfRoute";
 import mergePdfRoute from "./routes/mergePdfRoute";
@@ -8,10 +9,22 @@ import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
-const staticAllowedOrigins = [
-  "https://pdf-tools-saas-amyc.vercel.app",
-  "http://localhost:5173",
-];
+const parseTrustProxy = (): boolean | number => {
+  const trustProxy = process.env.TRUST_PROXY;
+  if (!trustProxy) {
+    return process.env.NODE_ENV === "production" ? 1 : false;
+  }
+
+  if (trustProxy === "true") return true;
+  if (trustProxy === "false") return false;
+
+  const parsed = Number(trustProxy);
+  return Number.isNaN(parsed) ? false : parsed;
+};
+
+app.set("trust proxy", parseTrustProxy());
+app.disable("x-powered-by");
+app.use(helmet());
 
 const envAllowedOrigins =
   process.env.CORS_ORIGINS
@@ -19,10 +32,10 @@ const envAllowedOrigins =
     .map((origin) => origin.trim())
     .filter(Boolean) ?? [];
 
-const allowedOrigins = new Set([...staticAllowedOrigins, ...envAllowedOrigins]);
-
-const isLocalhostOrigin = (origin: string): boolean =>
-  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+const defaultDevOrigins = process.env.NODE_ENV !== "production" ? ["http://localhost:5173"] : [];
+const allowedOrigins = new Set(
+  envAllowedOrigins.length > 0 ? envAllowedOrigins : defaultDevOrigins
+);
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
@@ -30,21 +43,28 @@ const corsOptions: CorsOptions = {
       return callback(null, true);
     }
 
-    if (allowedOrigins.has(origin) || isLocalhostOrigin(origin)) {
+    if (allowedOrigins.has(origin)) {
       return callback(null, true);
     }
 
-    return callback(new AppError(403, "CORS_ORIGIN_NOT_ALLOWED", "Origin is not allowed", { origin }));
+    return callback(
+      new AppError(403, "CORS_ORIGIN_NOT_ALLOWED", "Origin is not allowed", {
+        origin,
+        allowedOrigins: Array.from(allowedOrigins),
+      })
+    );
   },
   methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
 app.options("/{*any}", cors(corsOptions));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const bodyLimit = process.env.BODY_LIMIT ?? "1mb";
+app.use(express.json({ limit: bodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: bodyLimit, parameterLimit: 1000 }));
 
 app.use("/api/convert", imageToPdfRoute);
 app.use("/api/convert", mergePdfRoute);

@@ -15,18 +15,22 @@ const IMAGE_MIME_TYPES = [
   "image/tiff",
 ];
 
+const IMAGE_MAX_FILE_SIZE = 20 * 1024 * 1024;
+const IMAGE_MAX_FILE_COUNT = 20;
+
 const uploadImages = createUploader({
   allowedMimeTypes: IMAGE_MIME_TYPES,
-  maxFileSizeBytes: 20 * 1024 * 1024,
+  maxFileSizeBytes: IMAGE_MAX_FILE_SIZE,
+  maxFileCount: IMAGE_MAX_FILE_COUNT,
 });
 
 router.post(
   "/image-to-pdf",
-  uploadImages.array("files", 20),
+  uploadImages.array("files", IMAGE_MAX_FILE_COUNT),
   validateUploadedFiles({
     minCount: 1,
-    maxCount: 20,
-    maxFileSizeBytes: 20 * 1024 * 1024,
+    maxCount: IMAGE_MAX_FILE_COUNT,
+    maxFileSizeBytes: IMAGE_MAX_FILE_SIZE,
     allowedMimeTypes: IMAGE_MIME_TYPES,
   }),
   convertImageToPdf

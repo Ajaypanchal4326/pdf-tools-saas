@@ -6,6 +6,7 @@ import { AppError } from "../errors/AppError";
 type UploadConfig = {
   allowedMimeTypes: string[];
   maxFileSizeBytes: number;
+  maxFileCount: number;
 };
 
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -21,10 +22,17 @@ const storage = multer.diskStorage({
   },
 });
 
-export const createUploader = ({ allowedMimeTypes, maxFileSizeBytes }: UploadConfig) =>
+export const createUploader = ({
+  allowedMimeTypes,
+  maxFileSizeBytes,
+  maxFileCount,
+}: UploadConfig) =>
   multer({
     storage,
-    limits: { fileSize: maxFileSizeBytes },
+    limits: {
+      fileSize: maxFileSizeBytes,
+      files: maxFileCount,
+    },
     fileFilter: (_, file, cb) => {
       if (!allowedMimeTypes.includes(file.mimetype)) {
         return cb(
@@ -32,9 +40,7 @@ export const createUploader = ({ allowedMimeTypes, maxFileSizeBytes }: UploadCon
             415,
             "UNSUPPORTED_FILE_TYPE",
             `Unsupported file type: ${file.mimetype || "unknown"}`,
-            {
-              allowedMimeTypes,
-            }
+            { allowedMimeTypes }
           )
         );
       }
