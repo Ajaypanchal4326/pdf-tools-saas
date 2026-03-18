@@ -1,8 +1,10 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import cors, { CorsOptions } from "cors";
 
 import imageToPdfRoute from "./routes/imageToPdfRoute";
 import mergePdfRoute from "./routes/mergePdfRoute";
+import { AppError } from "./errors/AppError";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
@@ -24,7 +26,6 @@ const isLocalhostOrigin = (origin: string): boolean =>
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server and tools that don't send Origin.
     if (!origin) {
       return callback(null, true);
     }
@@ -33,7 +34,7 @@ const corsOptions: CorsOptions = {
       return callback(null, true);
     }
 
-    return callback(new Error("CORS_ORIGIN_NOT_ALLOWED"));
+    return callback(new AppError(403, "CORS_ORIGIN_NOT_ALLOWED", "Origin is not allowed", { origin }));
   },
   methods: ["GET", "POST", "OPTIONS"],
   optionsSuccessStatus: 204,
@@ -45,28 +46,13 @@ app.options("/{*any}", cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ============ ROUTES ============
 app.use("/api/convert", imageToPdfRoute);
 app.use("/api/convert", mergePdfRoute);
 
-// ============ HEALTH ROUTE ============
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "OK", message: "Server running" });
 });
 
-// ============ ERROR HANDLER ============
-app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
-  console.error("Server Error:", err);
-
-  if (err?.message === "CORS_ORIGIN_NOT_ALLOWED") {
-    return res.status(403).json({
-      success: false,
-      code: "CORS_ORIGIN_NOT_ALLOWED",
-      message: `Origin ${req.headers.origin ?? "unknown"} is not allowed`,
-    });
-  }
-
-  res.status(500).json({ success: false, message: err.message });
-});
+app.use(errorHandler);
 
 export default app;
