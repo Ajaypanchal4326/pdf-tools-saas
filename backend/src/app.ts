@@ -6,6 +6,11 @@ import imageToPdfRoute from "./routes/imageToPdfRoute";
 import mergePdfRoute from "./routes/mergePdfRoute";
 import { AppError } from "./errors/AppError";
 import { errorHandler } from "./middlewares/errorHandler";
+import {
+  requestContextMiddleware,
+  requestLoggerMiddleware,
+} from "./middlewares/requestContextMiddleware";
+import { metricsMiddleware, registerMetricsEndpoint } from "./observability/metrics";
 
 const app = express();
 
@@ -25,6 +30,8 @@ const parseTrustProxy = (): boolean | number => {
 app.set("trust proxy", parseTrustProxy());
 app.disable("x-powered-by");
 app.use(helmet());
+app.use(requestContextMiddleware);
+app.use(requestLoggerMiddleware);
 
 const envAllowedOrigins =
   process.env.CORS_ORIGINS
@@ -55,7 +62,7 @@ const corsOptions: CorsOptions = {
     );
   },
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-request-id"],
   optionsSuccessStatus: 204,
 };
 
@@ -66,12 +73,16 @@ const bodyLimit = process.env.BODY_LIMIT ?? "1mb";
 app.use(express.json({ limit: bodyLimit }));
 app.use(express.urlencoded({ extended: true, limit: bodyLimit, parameterLimit: 1000 }));
 
+app.use(metricsMiddleware);
+
 app.use("/api/convert", imageToPdfRoute);
 app.use("/api/convert", mergePdfRoute);
 
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "OK", message: "Server running" });
 });
+
+registerMetricsEndpoint(app);
 
 app.use(errorHandler);
 

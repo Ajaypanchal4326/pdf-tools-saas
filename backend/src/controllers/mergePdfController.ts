@@ -1,6 +1,8 @@
+import { randomUUID } from "crypto";
 import { Request, Response } from "express";
 import { PDFDocument } from "pdf-lib";
 import { readFile, unlink } from "fs/promises";
+import { logger } from "../lib/logger";
 
 type ControllerError = Error & {
   status?: number;
@@ -18,6 +20,7 @@ export const mergePdf = async (req: Request, res: Response) => {
     if (files.length < 2) {
       return res.status(400).json({
         success: false,
+        errorId: randomUUID(),
         code: "MINIMUM_FILES_REQUIRED",
         message: "Please upload at least two PDF files",
       });
@@ -59,9 +62,21 @@ export const mergePdf = async (req: Request, res: Response) => {
     return res.send(Buffer.from(finalPdfBytes));
   } catch (error: unknown) {
     const err = error as ControllerError;
+    const errorId = randomUUID();
+
+    logger.error(
+      {
+        requestId: req.requestId,
+        errorId,
+        code: err.code ?? "PDF_MERGE_PROCESSING_FAILED",
+        err,
+      },
+      "Merge PDF failed"
+    );
 
     return res.status(err.status ?? 500).json({
       success: false,
+      errorId,
       code: err.code ?? "PDF_MERGE_PROCESSING_FAILED",
       message: err.message || "Failed to merge PDFs",
       error: err.message,
