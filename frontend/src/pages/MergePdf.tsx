@@ -10,6 +10,12 @@ import {
   CheckCircle,
   FileText,
 } from "lucide-react";
+import { ApiError, api } from "../lib/api";
+import {
+  MAX_UPLOAD_FILE_COUNT,
+  MAX_UPLOAD_FILE_SIZE_BYTES,
+  MAX_UPLOAD_FILE_SIZE_MB,
+} from "../lib/uploadLimits";
 
 const MergePdf: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -20,15 +26,13 @@ const MergePdf: React.FC = () => {
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Toast
   const showNotification = (type: "success" | "error", message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 4000);
   };
 
   const isPdfFile = (file: File) =>
-    file.type === "application/pdf" ||
-    file.name.toLowerCase().endsWith(".pdf");
+    file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
 
   const handleFileSelect = (files: File[]) => {
     const pdfs = files.filter(isPdfFile);
@@ -36,6 +40,18 @@ const MergePdf: React.FC = () => {
       showNotification("error", "Please upload PDF files only.");
       return;
     }
+
+    if (selectedFiles.length + pdfs.length > MAX_UPLOAD_FILE_COUNT) {
+      showNotification("error", `You can upload up to ${MAX_UPLOAD_FILE_COUNT} PDFs.`);
+      return;
+    }
+
+    const oversizedFile = pdfs.find((file) => file.size > MAX_UPLOAD_FILE_SIZE_BYTES);
+    if (oversizedFile) {
+      showNotification("error", `Each PDF must be ${MAX_UPLOAD_FILE_SIZE_MB}MB or smaller.`);
+      return;
+    }
+
     setSelectedFiles((prev) => [...prev, ...pdfs]);
   };
 
@@ -56,7 +72,7 @@ const MergePdf: React.FC = () => {
   const formatFileSize = (bytes: number) => {
     const sizes = ["Bytes", "KB", "MB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
+    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
   };
 
   const handleMerge = async () => {
@@ -68,21 +84,7 @@ const MergePdf: React.FC = () => {
     setIsMerging(true);
 
     try {
-      const formData = new FormData();
-      selectedFiles.forEach((file) => formData.append("files", file));
-
-      const response = await fetch(
-  `${import.meta.env.VITE_API_URL}/api/convert/merge-pdf`,
-  {
-    method: "POST",
-    body: formData,
-  }
-);
-
-
-      if (!response.ok) throw new Error("Merge failed");
-
-      const blob = await response.blob();
+      const blob = await api.mergePdf(selectedFiles);
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement("a");
@@ -93,8 +95,12 @@ const MergePdf: React.FC = () => {
 
       showNotification("success", "Merged PDF downloaded successfully.");
       setSelectedFiles([]);
-    } catch {
-      showNotification("error", "Failed to merge PDFs. Try again.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        showNotification("error", err.message);
+      } else {
+        showNotification("error", "Failed to merge PDFs. Try again.");
+      }
     } finally {
       setIsMerging(false);
     }
@@ -103,7 +109,6 @@ const MergePdf: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <SEOAuto />
-      {/* Toast */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-slide-in">
           <div
@@ -121,7 +126,6 @@ const MergePdf: React.FC = () => {
         </div>
       )}
 
-      {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4">
@@ -138,14 +142,10 @@ const MergePdf: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
-          {/* Upload Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Step 1: Select PDF Files
-            </h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Step 1: Select PDF Files</h2>
 
             <div
               onDrop={handleDrop}
@@ -164,9 +164,7 @@ const MergePdf: React.FC = () => {
                 <Upload className="text-blue-600 w-8 h-8" />
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Upload PDF Documents
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload PDF Documents</h3>
               <p className="text-sm text-gray-600 mb-4">
                 Drag and drop your PDFs here, or click to browse
               </p>
@@ -177,9 +175,7 @@ const MergePdf: React.FC = () => {
                 accept="application/pdf"
                 multiple
                 className="hidden"
-                onChange={(e) =>
-                  e.target.files && handleFileSelect(Array.from(e.target.files))
-                }
+                onChange={(e) => e.target.files && handleFileSelect(Array.from(e.target.files))}
               />
 
               <label
@@ -190,12 +186,11 @@ const MergePdf: React.FC = () => {
               </label>
 
               <p className="text-xs text-gray-500 mt-4">
-                Minimum 2 PDF files required
+                Minimum 2 PDFs. Max {MAX_UPLOAD_FILE_COUNT} files, {MAX_UPLOAD_FILE_SIZE_MB}MB each.
               </p>
             </div>
           </div>
 
-          {/* File List */}
           {selectedFiles.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-4">
@@ -221,12 +216,8 @@ const MergePdf: React.FC = () => {
                       <GripVertical className="text-gray-400 w-5 h-5 flex-shrink-0" />
                       <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm text-gray-700 font-medium truncate">
-                          {file.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {formatFileSize(file.size)}
-                        </p>
+                        <p className="text-sm text-gray-700 font-medium truncate">{file.name}</p>
+                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                       </div>
                     </div>
 
@@ -240,18 +231,13 @@ const MergePdf: React.FC = () => {
                 ))}
               </div>
 
-              <p className="text-xs text-gray-500 text-center mt-3">
-                Files will be merged in this order
-              </p>
+              <p className="text-xs text-gray-500 text-center mt-3">Files will be merged in this order</p>
             </div>
           )}
 
-          {/* Merge Button */}
           {selectedFiles.length >= 2 && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Step 3: Merge PDFs
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Step 3: Merge PDFs</h2>
 
               <button
                 onClick={handleMerge}
@@ -277,11 +263,8 @@ const MergePdf: React.FC = () => {
             </div>
           )}
 
-          {/* How it works */}
           <div className="bg-blue-50 rounded-xl border border-blue-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              How it works
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">How it works</h3>
             <ol className="space-y-3 text-sm text-gray-700">
               <li className="flex items-start">
                 <span className="font-semibold text-blue-600 mr-3 flex-shrink-0">1.</span>

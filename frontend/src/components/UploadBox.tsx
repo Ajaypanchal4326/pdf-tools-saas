@@ -1,5 +1,6 @@
-import React, { useState, useRef, type DragEvent,} from "react";
+import React, { useRef, useState, type DragEvent } from "react";
 import { Upload, FileText, Image, CheckCircle } from "lucide-react";
+import { MAX_UPLOAD_FILE_SIZE_BYTES, MAX_UPLOAD_FILE_SIZE_MB } from "../lib/uploadLimits";
 
 type AcceptedTypes = "images" | "pdf" | "all";
 
@@ -24,9 +25,6 @@ const UploadBox: React.FC<UploadBoxProps> = ({
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // -----------------------------------
-  // ACCEPTED FILE TYPES
-  // -----------------------------------
   const getAcceptedFiles = (): string => {
     switch (acceptedTypes) {
       case "images":
@@ -53,9 +51,6 @@ const UploadBox: React.FC<UploadBoxProps> = ({
     }
   };
 
-  // -----------------------------------
-  // VALIDATE FILES
-  // -----------------------------------
   const isValidFileType = (file: File): boolean => {
     const type = file.type.toLowerCase();
     if (acceptedTypes === "images") return type.startsWith("image/");
@@ -78,13 +73,16 @@ const UploadBox: React.FC<UploadBoxProps> = ({
       return;
     }
 
+    const oversizedFile = validFiles.find((file) => file.size > MAX_UPLOAD_FILE_SIZE_BYTES);
+    if (oversizedFile) {
+      alert(`File exceeds ${MAX_UPLOAD_FILE_SIZE_MB}MB limit: ${oversizedFile.name}`);
+      return;
+    }
+
     setSelectedCount(validFiles.length);
     onFileSelect(validFiles);
   };
 
-  // -----------------------------------
-  // DRAG EVENTS (FIXED)
-  // -----------------------------------
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!isDragging) setIsDragging(true);
@@ -92,7 +90,6 @@ const UploadBox: React.FC<UploadBoxProps> = ({
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    // Prevent dragleave from firing when moving inside children
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     const withinX = e.clientX >= rect.left && e.clientX <= rect.right;
     const withinY = e.clientY >= rect.top && e.clientY <= rect.bottom;
@@ -105,14 +102,8 @@ const UploadBox: React.FC<UploadBoxProps> = ({
     handleFiles(e.dataTransfer.files);
   };
 
-  // -----------------------------------
-  // BROWSE FILES
-  // -----------------------------------
   const handleBrowseClick = () => fileInputRef.current?.click();
 
-  // -----------------------------------
-  // UI
-  // -----------------------------------
   return (
     <div className="w-full">
       <div
@@ -120,15 +111,12 @@ const UploadBox: React.FC<UploadBoxProps> = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all duration-200
-          ${
-            isDragging
-              ? "border-blue-500 bg-blue-50 scale-[1.02]"
-              : "border-gray-300 bg-white hover:border-blue-400 hover:bg-gray-50"
-          }
-        `}
+        className={`relative border-2 border-dashed rounded-xl p-8 cursor-pointer transition-all duration-200 ${
+          isDragging
+            ? "border-blue-500 bg-blue-50 scale-[1.02]"
+            : "border-gray-300 bg-white hover:border-blue-400 hover:bg-gray-50"
+        }`}
       >
-        {/* Hidden input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -138,14 +126,11 @@ const UploadBox: React.FC<UploadBoxProps> = ({
           onChange={(e) => handleFiles(e.target.files)}
         />
 
-        {/* Content */}
         <div className="flex flex-col items-center justify-center space-y-4 pointer-events-none">
-
-          {/* Icon */}
           <div
-            className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-200
-              ${isDragging ? "bg-blue-100" : "bg-gray-100"}
-            `}
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-200 ${
+              isDragging ? "bg-blue-100" : "bg-gray-100"
+            }`}
           >
             {selectedCount > 0 ? (
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -158,7 +143,6 @@ const UploadBox: React.FC<UploadBoxProps> = ({
             )}
           </div>
 
-          {/* Text */}
           <div className="text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-1">
               {title ||
@@ -168,21 +152,16 @@ const UploadBox: React.FC<UploadBoxProps> = ({
             </h3>
 
             <p className="text-sm text-gray-600 mb-4">
-              {description ||
-                (isDragging
-                  ? "Release to upload"
-                  : `or click to browse • ${getFileTypeLabel()}`)}
+              {description || (isDragging ? "Release to upload" : `or click to browse - ${getFileTypeLabel()}`)}
             </p>
           </div>
 
-          {/* File Info */}
           <div className="text-xs text-gray-500 text-center space-y-1">
             {multiple && <p>You can upload up to {maxFiles} files</p>}
-            <p>Maximum file size: 50MB per file</p>
+            <p>Maximum file size: {MAX_UPLOAD_FILE_SIZE_MB}MB per file</p>
           </div>
         </div>
 
-        {/* Drag Overlay */}
         {isDragging && (
           <div className="absolute inset-0 bg-blue-50 bg-opacity-80 rounded-xl flex items-center justify-center pointer-events-none">
             <div className="text-center">

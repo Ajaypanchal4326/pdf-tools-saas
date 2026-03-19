@@ -4,6 +4,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import SEOAuto from "../components/SEOAuto";
+import { MAX_UPLOAD_FILE_SIZE_BYTES, MAX_UPLOAD_FILE_SIZE_MB } from "../lib/uploadLimits";
 
 // FIXED: Proper worker setup for Vite
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -34,8 +35,8 @@ const PdfToImage: React.FC = () => {
       return;
     }
 
-    if (file.size > 50 * 1024 * 1024) { // 50MB
-      setError('PDF file size must be less than 50MB');
+    if (file.size > MAX_UPLOAD_FILE_SIZE_BYTES) {
+      setError(`PDF file size must be less than ${MAX_UPLOAD_FILE_SIZE_MB}MB`);
       return;
     }
     
@@ -284,7 +285,7 @@ const PdfToImage: React.FC = () => {
                   Drag and drop your PDF here, or click to browse
                 </p>
                 <p className="text-xs text-gray-500 mb-4">
-                  Maximum file size: 50MB • Processed locally in your browser
+                  Maximum file size: {MAX_UPLOAD_FILE_SIZE_MB}MB - Processed locally in your browser
                 </p>
                 <input
                   type="file"
@@ -425,7 +426,7 @@ const PdfToImage: React.FC = () => {
             <ol className="space-y-3 text-sm text-gray-700">
               <li className="flex items-start">
                 <span className="font-semibold text-purple-600 mr-3 flex-shrink-0">1.</span>
-                <span>Upload a PDF document (up to 50MB)</span>
+                <span>Upload a PDF document (up to {MAX_UPLOAD_FILE_SIZE_MB}MB)</span>
               </li>
               <li className="flex items-start">
                 <span className="font-semibold text-purple-600 mr-3 flex-shrink-0">2.</span>
@@ -450,3 +451,6 @@ const PdfToImage: React.FC = () => {
 };
 
 export default PdfToImage;
+
+
+
