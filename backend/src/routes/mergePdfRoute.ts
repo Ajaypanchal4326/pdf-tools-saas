@@ -2,26 +2,28 @@ import express from "express";
 import { mergePdf } from "../controllers/mergePdfController";
 import { createUploader } from "../middlewares/uploadMiddleware";
 import { validateUploadedFiles } from "../middlewares/validationMiddleware";
+import {
+  MAX_UPLOAD_FILE_COUNT,
+  MAX_UPLOAD_FILE_SIZE_BYTES,
+} from "../constants/uploadLimits";
 
 const router = express.Router();
 
 const PDF_MIME_TYPES = ["application/pdf"];
-const PDF_MAX_FILE_SIZE = 20 * 1024 * 1024;
-const PDF_MAX_FILE_COUNT = 20;
 
 const uploadPdfs = createUploader({
   allowedMimeTypes: PDF_MIME_TYPES,
-  maxFileSizeBytes: PDF_MAX_FILE_SIZE,
-  maxFileCount: PDF_MAX_FILE_COUNT,
+  maxFileSizeBytes: MAX_UPLOAD_FILE_SIZE_BYTES,
+  maxFileCount: MAX_UPLOAD_FILE_COUNT,
 });
 
 router.post(
   "/merge-pdf",
-  uploadPdfs.array("files", PDF_MAX_FILE_COUNT),
+  uploadPdfs.array("files", MAX_UPLOAD_FILE_COUNT),
   validateUploadedFiles({
     minCount: 2,
-    maxCount: PDF_MAX_FILE_COUNT,
-    maxFileSizeBytes: PDF_MAX_FILE_SIZE,
+    maxCount: MAX_UPLOAD_FILE_COUNT,
+    maxFileSizeBytes: MAX_UPLOAD_FILE_SIZE_BYTES,
     allowedMimeTypes: PDF_MIME_TYPES,
   }),
   mergePdf

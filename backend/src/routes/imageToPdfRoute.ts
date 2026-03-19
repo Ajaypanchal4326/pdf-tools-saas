@@ -2,6 +2,10 @@ import express from "express";
 import { convertImageToPdf } from "../controllers/imageToPdfController";
 import { createUploader } from "../middlewares/uploadMiddleware";
 import { validateUploadedFiles } from "../middlewares/validationMiddleware";
+import {
+  MAX_UPLOAD_FILE_COUNT,
+  MAX_UPLOAD_FILE_SIZE_BYTES,
+} from "../constants/uploadLimits";
 
 const router = express.Router();
 
@@ -15,22 +19,19 @@ const IMAGE_MIME_TYPES = [
   "image/tiff",
 ];
 
-const IMAGE_MAX_FILE_SIZE = 20 * 1024 * 1024;
-const IMAGE_MAX_FILE_COUNT = 20;
-
 const uploadImages = createUploader({
   allowedMimeTypes: IMAGE_MIME_TYPES,
-  maxFileSizeBytes: IMAGE_MAX_FILE_SIZE,
-  maxFileCount: IMAGE_MAX_FILE_COUNT,
+  maxFileSizeBytes: MAX_UPLOAD_FILE_SIZE_BYTES,
+  maxFileCount: MAX_UPLOAD_FILE_COUNT,
 });
 
 router.post(
   "/image-to-pdf",
-  uploadImages.array("files", IMAGE_MAX_FILE_COUNT),
+  uploadImages.array("files", MAX_UPLOAD_FILE_COUNT),
   validateUploadedFiles({
     minCount: 1,
-    maxCount: IMAGE_MAX_FILE_COUNT,
-    maxFileSizeBytes: IMAGE_MAX_FILE_SIZE,
+    maxCount: MAX_UPLOAD_FILE_COUNT,
+    maxFileSizeBytes: MAX_UPLOAD_FILE_SIZE_BYTES,
     allowedMimeTypes: IMAGE_MIME_TYPES,
   }),
   convertImageToPdf
