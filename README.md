@@ -91,12 +91,19 @@ TRUST_PROXY=false
 LOG_LEVEL=info
 ENABLE_METRICS=false
 NODE_ENV=development
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_API_MAX=200
+RATE_LIMIT_UPLOAD_MAX=20
 ```
 
 Notes:
 
 - `CORS_ORIGINS` accepts comma-separated origins.
 - Set `ENABLE_METRICS=true` to expose `/metrics`.
+- Rate limits are enforced only when `NODE_ENV=production`.
+- `RATE_LIMIT_WINDOW_MS` is the shared limiter window in milliseconds.
+- `RATE_LIMIT_API_MAX` caps requests per IP for all `/api/*` routes per window.
+- `RATE_LIMIT_UPLOAD_MAX` caps upload endpoint requests per IP per window.
 
 ## Scripts
 
@@ -179,6 +186,7 @@ Example error payload:
   - `CORS_ORIGINS` with frontend domain(s)
   - `TRUST_PROXY=1` when behind reverse proxy
   - `ENABLE_METRICS=true` if scraping with Prometheus
+  - `RATE_LIMIT_WINDOW_MS`, `RATE_LIMIT_API_MAX`, `RATE_LIMIT_UPLOAD_MAX` to tune abuse protection
 
 ### Reverse proxy and ingress
 
