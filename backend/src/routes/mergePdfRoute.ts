@@ -1,5 +1,6 @@
 import express from "express";
 import { mergePdf } from "../controllers/mergePdfController";
+import { uploadLimiter } from "../middlewares/rateLimitMiddleware";
 import { createUploader } from "../middlewares/uploadMiddleware";
 import { validateUploadedFiles } from "../middlewares/validationMiddleware";
 import {
@@ -19,6 +20,7 @@ const uploadPdfs = createUploader({
 
 router.post(
   "/merge-pdf",
+  uploadLimiter,
   uploadPdfs.array("files", MAX_UPLOAD_FILE_COUNT),
   validateUploadedFiles({
     minCount: 2,

@@ -1,5 +1,6 @@
 import express from "express";
 import { convertImageToPdf } from "../controllers/imageToPdfController";
+import { uploadLimiter } from "../middlewares/rateLimitMiddleware";
 import { createUploader } from "../middlewares/uploadMiddleware";
 import { validateUploadedFiles } from "../middlewares/validationMiddleware";
 import {
@@ -27,6 +28,7 @@ const uploadImages = createUploader({
 
 router.post(
   "/image-to-pdf",
+  uploadLimiter,
   uploadImages.array("files", MAX_UPLOAD_FILE_COUNT),
   validateUploadedFiles({
     minCount: 1,

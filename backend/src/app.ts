@@ -10,6 +10,7 @@ import {
   requestContextMiddleware,
   requestLoggerMiddleware,
 } from "./middlewares/requestContextMiddleware";
+import { apiLimiter } from "./middlewares/rateLimitMiddleware";
 import { metricsMiddleware, registerMetricsEndpoint } from "./observability/metrics";
 
 const app = express();
@@ -74,6 +75,7 @@ app.use(express.json({ limit: bodyLimit }));
 app.use(express.urlencoded({ extended: true, limit: bodyLimit, parameterLimit: 1000 }));
 
 app.use(metricsMiddleware);
+app.use("/api", apiLimiter);
 
 app.use("/api/convert", imageToPdfRoute);
 app.use("/api/convert", mergePdfRoute);
